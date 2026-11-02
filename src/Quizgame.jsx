@@ -139,23 +139,25 @@ export default function Quizgame({
             {String(reverseMin).padStart(2, "0")}:
             {reverseSec === 60 ? "00" : String(reverseSec).padStart(2, "0")}
           </p>
-          {count < 16 && (
-            <button
-              style={
-                queCount > 16
-                  ? {
-                      cursor: "not-allowed",
-                      background: "linear-gradient(135deg, #8b5cf6, #3b3b3b)",
-                    }
-                  : null
-              }
-              type="button"
-              className="next-btn"
-              onClick={isRightAns && handleNext}
-            >
-              Next
-            </button>
-          )}
+          {count < 16 ? (
+            isRightAns === true ? (
+              <button
+                style={
+                  queCount > 16
+                    ? {
+                        cursor: "not-allowed",
+                        background: "linear-gradient(135deg, #8b5cf6, #3b3b3b)",
+                      }
+                    : null
+                }
+                type="button"
+                className="next-btn"
+                onClick={handleNext}
+              >
+                Next
+              </button>
+            ) : null
+          ) : null}
         </div>
       </div>
     </div>
