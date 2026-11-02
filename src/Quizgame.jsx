@@ -28,8 +28,8 @@ export default function Quizgame({
     pointCount: 0,
     progressWidth: 0,
   };
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { isDisabled, isRightAns, count, queCount, pointCount } = state;
+  const [{ isDisabled, isRightAns, count, queCount, pointCount }, dispatch] =
+    useReducer(reducer, initialState);
 
   function reducer(state, action) {
     switch (action.type) {

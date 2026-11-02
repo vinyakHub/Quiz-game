@@ -187,8 +187,11 @@ export default function App() {
     reverseSec: 59,
     tickCount: 1,
   };
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { play, reverseMin, reverseSec, tickCount } = state;
+  const [{ play, reverseMin, reverseSec, tickCount }, dispatch] = useReducer(
+    reducer,
+    initialState,
+  );
+
   function reducer(state, action) {
     switch (action.type) {
       case "letsStart":
