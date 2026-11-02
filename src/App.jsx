@@ -213,6 +213,14 @@ export default function App() {
         return { ...state, reverseMin: "00", reverseSec: "00" };
       case "tickCount":
         return { ...state, tickCount: state.tickCount + 1 };
+      case "restartQuiz":
+        return {
+          ...state,
+          play: false,
+          reverseMin: 9,
+          reverseSec: 59,
+          tickCount: 1,
+        };
       default:
         return;
     }
@@ -225,6 +233,10 @@ export default function App() {
         flag: index === 0,
       })),
     );
+  }
+
+  function handleRestart() {
+    dispatch({ type: "restartQuiz" });
   }
 
   useEffect(() => {
@@ -281,6 +293,7 @@ export default function App() {
             reverseSec={reverseSec}
             setReactQuestions={setReactQuestions}
             givenNextCount={givenNextCount}
+            handleRestart={handleRestart}
           />
         ) : (
           <Quizstartpage letsStart={letsStart} />

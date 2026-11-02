@@ -8,6 +8,7 @@ export default function Quizgame({
   reverseSec,
   setReactQuestions,
   givenNextCount,
+  handleRestart,
 }) {
   const [rightAnsColor, wrongAnsColor] = [
     {
@@ -27,9 +28,12 @@ export default function Quizgame({
     queCount: 1,
     pointCount: 0,
     progressWidth: 0,
+    active: "next",
   };
-  const [{ isDisabled, isRightAns, count, queCount, pointCount }, dispatch] =
-    useReducer(reducer, initialState);
+  const [
+    { isDisabled, isRightAns, count, queCount, pointCount, active },
+    dispatch,
+  ] = useReducer(reducer, initialState);
 
   function reducer(state, action) {
     switch (action.type) {
@@ -41,6 +45,7 @@ export default function Quizgame({
           count: state.count + 1,
           queCount: state.queCount + 1,
           isRightAns: false,
+          active: state.queCount === 14 ? "finish" : "next",
         };
       case "point":
         return {
@@ -154,10 +159,18 @@ export default function Quizgame({
                 className="next-btn"
                 onClick={handleNext}
               >
-                Next
+                {active === "next" ? "Next" : "Finish"}
               </button>
             ) : null
-          ) : null}
+          ) : (
+            <button
+              type="button"
+              className="restart-quiz"
+              onClick={handleRestart}
+            >
+              Restart Quiz
+            </button>
+          )}
         </div>
       </div>
     </div>

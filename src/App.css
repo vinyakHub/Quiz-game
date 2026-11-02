@@ -229,6 +229,31 @@
   transform: translateY(-1px);
 }
 
+.restart-quiz {
+  border: 1px solid rgba(203, 213, 225, 0.35);
+  border-radius: 12px;
+  padding: 0.9rem 1.5rem;
+  background: rgba(148, 163, 184, 0.08);
+  color: #cbd5e1;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.restart-quiz:hover {
+  background: rgba(148, 163, 184, 0.16);
+  border-color: rgba(203, 213, 225, 0.55);
+  color: #f8fafc;
+}
+
+.restart-quiz:focus-visible {
+  outline: 2px solid #cbd5e1;
+  outline-offset: 3px;
+}
+
 .congrats-container {
   width: 100%;
   min-height: auto;
@@ -283,6 +308,10 @@
   }
 
   .next-btn {
+    width: 100%;
+  }
+
+  .restart-quiz {
     width: 100%;
   }
 }
