@@ -1,4 +1,5 @@
-export default function Quizstartpage({ letsStart }) {
+import { memo } from "react";
+function Quizstartpage({ letsStart }) {
   return (
     <>
       <h2 className="quiz-subtitle">Welcome to The React Quiz!</h2>
@@ -27,3 +28,5 @@ export default function Quizstartpage({ letsStart }) {
     </>
   );
 }
+
+export default memo(Quizstartpage);

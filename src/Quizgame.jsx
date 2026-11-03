@@ -1,14 +1,15 @@
-import { useReducer } from "react";
+import { useReducer, memo } from "react";
 import celebration from "./assets/celebration.mp4";
 import failed from "./assets/failed.mp4";
 
-export default function Quizgame({
+function Quizgame({
   reactQuestions,
   reverseMin,
   reverseSec,
   setReactQuestions,
-  givenNextCount,
   handleRestart,
+  play,
+  finishQuiz,
 }) {
   const [rightAnsColor, wrongAnsColor] = [
     {
@@ -34,7 +35,6 @@ export default function Quizgame({
     { isDisabled, isRightAns, count, queCount, pointCount, active },
     dispatch,
   ] = useReducer(reducer, initialState);
-
   function reducer(state, action) {
     switch (action.type) {
       case "handleClickAns":
@@ -69,14 +69,18 @@ export default function Quizgame({
 
   function handleNext() {
     dispatch({ type: "next" });
+    if (queCount > 14) {
+      finishQuiz();
+    }
     setReactQuestions((data) => {
       return data.map((prev) => ({
         ...prev,
         flag: prev.id === count + 1,
       }));
     });
-    givenNextCount();
   }
+
+  console.log("play", play);
   return (
     <div className="quiz-game">
       <div>
@@ -90,7 +94,7 @@ export default function Quizgame({
           <p>Question {queCount < 16 ? queCount : 15}/15</p>
           <p>{pointCount}/150 points</p>
         </div>
-        {queCount <= 15 ? (
+        {play ? (
           reactQuestions.map((game) =>
             game.flag === true ? (
               <div key={game.id}>
@@ -101,7 +105,7 @@ export default function Quizgame({
                       <button
                         key={opt.id}
                         type="button"
-                        className="answer-option"
+                        className={`answer-option ${reverseMin === 0 && reverseSec === 0 ? "disabled" : ""}`}
                         onClick={() => handleClickAns(opt.id)}
                         style={
                           isRightAns === true
@@ -109,6 +113,9 @@ export default function Quizgame({
                               ? rightAnsColor
                               : wrongAnsColor
                             : null
+                        }
+                        disabled={
+                          reverseMin === 0 && reverseSec === 0 ? true : false
                         }
                       >
                         {opt.opts}
@@ -144,7 +151,15 @@ export default function Quizgame({
             {String(reverseMin).padStart(2, "0")}:
             {reverseSec === 60 ? "00" : String(reverseSec).padStart(2, "0")}
           </p>
-          {count < 16 ? (
+          {reverseMin === 0 && reverseSec === 0 ? (
+            <button
+              type="button"
+              className="restart-quiz"
+              onClick={handleRestart}
+            >
+              Restart Quiz
+            </button>
+          ) : count < 16 ? (
             isRightAns === true ? (
               <button
                 style={
@@ -176,3 +191,5 @@ export default function Quizgame({
     </div>
   );
 }
+
+export default memo(Quizgame);

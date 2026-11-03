@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState, useCallback } from "react";
 import reactIcon from "./assets/react.svg";
 import "./App.css";
 import Quizgame from "./Quizgame";
@@ -185,47 +185,48 @@ export default function App() {
     play: false,
     reverseMin: 9,
     reverseSec: 59,
-    tickCount: 1,
+    openHome: false,
+    count: 1,
   };
-  const [{ play, reverseMin, reverseSec, tickCount }, dispatch] = useReducer(
-    reducer,
-    initialState,
-  );
+  const [{ play, reverseMin, reverseSec, openHome, count }, dispatch] =
+    useReducer(reducer, initialState);
 
   function reducer(state, action) {
     switch (action.type) {
       case "letsStart":
-        return { ...state, play: true };
+        return { ...state, play: true, openHome: true };
       case "tick":
+        if (state.reverseMin === 0 && state.reverseSec === 0) {
+          return { ...state, play: false };
+        }
+        if (state.reverseMin > 0 && state.reverseSec === 0) {
+          return { ...state, reverseMin: state.reverseMin - 1, reverseSec: 59 };
+        }
+        return { ...state, reverseSec: state.reverseSec - 1 };
+      case "stopMin":
         return {
           ...state,
-          reverseMin: state.reverseMin - 1,
+          reverseMin: 0,
+          reverseSec: 0,
         };
-      case "tickSec":
-        return {
-          ...state,
-          reverseSec:
-            state.reverseSec === 0
-              ? (state.reverseSec = 59)
-              : state.reverseSec - 1,
-        };
-      case "stopTime":
-        return { ...state, reverseMin: "00", reverseSec: "00" };
-      case "tickCount":
-        return { ...state, tickCount: state.tickCount + 1 };
       case "restartQuiz":
         return {
           ...state,
           play: false,
+          openHome: false,
           reverseMin: 9,
           reverseSec: 59,
-          tickCount: 1,
+        };
+      case "finish":
+        return {
+          ...state,
+          play: false,
         };
       default:
-        return;
+        return state;
     }
   }
-  function letsStart() {
+  const letsStart = useCallback(() => {
     dispatch({ type: "letsStart" });
     setReactQuestions((prev) =>
       prev.map((question, index) => ({
@@ -233,48 +234,21 @@ export default function App() {
         flag: index === 0,
       })),
     );
-  }
+  });
 
-  function handleRestart() {
+  const handleRestart = useCallback(() => {
     dispatch({ type: "restartQuiz" });
-  }
+  }, []);
 
   useEffect(() => {
     if (!play) return;
     let timer;
-    if (tickCount < 16) {
-      timer = setInterval(() => {
-        if (reverseMin > 0) {
-          dispatch({ type: "tick" });
-        } else {
-          dispatch({ type: "stopTime" });
-        }
-      }, 60000);
-    }
+    timer = setInterval(() => {
+      dispatch({ type: "tick" });
+    }, 1000);
 
     return () => clearInterval(timer);
-  }, [play, reverseMin]);
-
-  useEffect(() => {
-    if (!play) return;
-    let timer;
-
-    if (tickCount < 16) {
-      timer = setInterval(() => {
-        if (reverseMin > 0) {
-          dispatch({ type: "tickSec" });
-        } else {
-          dispatch({ type: "stopTime" });
-        }
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [play, reverseSec]);
-
-  function givenNextCount() {
-    dispatch({ type: "tickCount" });
-  }
-
+  }, [play]);
   return (
     <section className="quiz-startpage">
       <div className="quiz-card">
@@ -286,14 +260,15 @@ export default function App() {
         </div>
 
         <h1 className="quiz-title">THE REACT QUIZ</h1>
-        {play ? (
+        {openHome ? (
           <Quizgame
+            play={play}
             reactQuestions={reactQuestions}
             reverseMin={reverseMin}
             reverseSec={reverseSec}
             setReactQuestions={setReactQuestions}
-            givenNextCount={givenNextCount}
             handleRestart={handleRestart}
+            finishQuiz={() => dispatch({ type: "finish" })}
           />
         ) : (
           <Quizstartpage letsStart={letsStart} />
